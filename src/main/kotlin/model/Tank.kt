@@ -27,6 +27,12 @@ class Tank(override var x: Int, override var y: Int) :Moveable {
     }
 
     fun move(direction:Direction) {
+        //如果即将发生碰撞
+        if (direction == badDirection) {
+            return
+        }
+
+        //如果当前坦克的朝向和待移动的方向不一致时候，只改变坦克的朝向，坦克不移动
         if (currentDirection != direction) {
             currentDirection = direction
             return
@@ -50,20 +56,40 @@ class Tank(override var x: Int, override var y: Int) :Moveable {
         }else if (x > Config.gameWidth - Config.block) {
             x = Config.gameWidth - Config.block
         }
-
-
-
-
     }
 
     override fun willCollision(block: Blockable): Direction? {
-
-        return null
-
-
+        var x:Int = this.x
+        var y:Int = this.y
+        when(currentDirection) {
+            Direction.UP -> y -= velocity
+            Direction.DOWN -> y += velocity
+            Direction.LEFT -> x -= velocity
+            Direction.RIGHT -> x += velocity
+        }
+        var direction = when {
+            block.y + block.height <= y -> {
+                null
+            }
+            block.y >= y + height -> {
+                null
+            }
+            block.x + block.width <= x -> {
+                null
+            }
+            block.x >= x + width -> {
+                null
+            }
+            else -> {
+                currentDirection
+            }
+        }
+        return direction
     }
 
     override fun notifyCollision(direction: Direction?, block: Blockable?) {
+        badDirection = direction
+
     }
 
     open fun shot() {
