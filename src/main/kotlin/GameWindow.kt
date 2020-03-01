@@ -18,7 +18,7 @@ class GameWindow:Window(title = "坦克大战1.0", width = Config.gameWidth,
 
     override fun onCreate() {
         var file = File(javaClass.getResource("/map/1.map").path)
-        var rows:List<String> = file.readLines()
+        var rows = file.readLines()
         var rowIndex = 0
         rows.forEach { row->
             var collumIndex = 0
@@ -35,11 +35,12 @@ class GameWindow:Window(title = "坦克大战1.0", width = Config.gameWidth,
             rowIndex++
         }
 
-        tank = Tank(Config.block * 6, Config.block * 10)
+        tank = Tank(Config.block * 6, Config.block * 11)
         views.add(tank)
     }
 
     override fun onDisplay() {
+        //界面可见的情况下不停地调用
 
         views.forEach {
             it.draw()
@@ -48,6 +49,7 @@ class GameWindow:Window(title = "坦克大战1.0", width = Config.gameWidth,
     }
 
     override fun onKeyPressed(event: KeyEvent) {
+        println("onKeyPressed, wyj code:" + event.code)
         when(event.code) {
             KeyCode.W -> {
                 tank.move(Direction.UP)
@@ -68,23 +70,8 @@ class GameWindow:Window(title = "坦克大战1.0", width = Config.gameWidth,
     }
 
     override fun onRefresh() {
+        //界面可见的情况下不停地调用
         //过滤出可运动的元素集合并遍历每个元素
         //进一步遍历阻塞能力的元素集合并遍历每个元素
-        views.filter { it is Moveable }.forEach {move ->
-            move as Moveable
-            var badDirection: Direction? = null
-            var badBlock:Blockable? = null
-            views.filter { it is Blockable }.forEach blockTag@ { block->
-                block as Blockable
-                var direction = move.willCollision(block)
-                direction?.let {
-                    badDirection = direction
-                    badBlock = block
-                    return@blockTag
-                }
-            }
-
-            move.notifyCollision(badDirection, badBlock)
-        }
     }
 }
