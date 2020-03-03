@@ -92,7 +92,34 @@ class Tank(override var x: Int, override var y: Int) :Moveable {
 
     }
 
-    open fun shot() {
-
+    open fun shot():Bullet {
+        return Bullet(currentDirection) { bulletWidth, bulletHeight ->
+            /**
+             * 坦克朝上
+             * bulletX = tankX + (tankWidth-bulletWidth)/2
+             * bulletY = tankY - bulletHeight/2
+             */
+            var bulletX:Int = x
+            var bulletY:Int = y
+            when(currentDirection) {
+                Direction.UP -> {
+                    bulletX = x + (width - bulletWidth) / 2
+                    bulletY = y - bulletHeight / 2
+                }
+                Direction.DOWN -> {
+                    bulletX = x + (width - bulletWidth) / 2
+                    bulletY = y + height - bulletHeight/ 2
+                }
+                Direction.LEFT -> {
+                    bulletX = x - bulletWidth / 2
+                    bulletY = y + (height - bulletHeight) / 2
+                }
+                Direction.RIGHT -> {
+                    bulletX = x + width - bulletWidth / 2
+                    bulletY = y + (height - bulletHeight) / 2
+                }
+            }
+            Pair(bulletX, bulletY)
+        }
     }
 }

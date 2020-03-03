@@ -1,3 +1,4 @@
+import business.AutoMoveable
 import business.Blockable
 import business.Moveable
 import enums.Direction
@@ -66,7 +67,8 @@ class GameWindow : Window(
                 tank.move(Direction.RIGHT)
             }
             KeyCode.ENTER -> {
-                tank.shot()
+                var bullet = tank.shot()
+                views.add(bullet)
             }
         }
     }
@@ -90,6 +92,11 @@ class GameWindow : Window(
             }
             move.notifyCollision(badDirection, blockView)
 
+        }
+
+        //检测自动移动的物体，并自动移动起来
+        views.filter { it is AutoMoveable }.forEach {
+            (it as AutoMoveable).autoMove()
         }
     }
 }
