@@ -45,10 +45,10 @@ class Bullet(override var currentDirection: Direction, creator: (width:Int, heig
     }
 
     override fun canDestroy(): Boolean {
-        if (x < width || x > Config.gameWidth) {
+        if (x < -width || x > Config.gameWidth) {
             return true
         }
-        if (y < height || y > Config.gameHeight) {
+        if (y < -height || y > Config.gameHeight) {
             return true
         }
         return false
