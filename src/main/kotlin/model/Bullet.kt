@@ -1,12 +1,14 @@
 package model
 
+import business.Attackable
 import business.AutoMoveable
 import business.Destroyable
+import business.Sufferable
 import enums.Direction
 import org.itheima.kotlin.game.core.Painter
 
 class Bullet(override var currentDirection: Direction, creator: (width:Int, height: Int) -> Pair<Int, Int>):
-    AutoMoveable, Destroyable {
+    AutoMoveable, Destroyable, Attackable {
 
     override var x: Int = 0
     override var y: Int = 0
@@ -50,5 +52,12 @@ class Bullet(override var currentDirection: Direction, creator: (width:Int, heig
             return true
         }
         return false
+    }
+
+    override fun willCollision(sufferable: Sufferable): Boolean {
+        return false
+    }
+
+    override fun notityAttack(suffer: Sufferable) {
     }
 }

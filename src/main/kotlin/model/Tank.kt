@@ -67,24 +67,41 @@ class Tank(override var x: Int, override var y: Int) :Moveable {
             Direction.LEFT -> x -= velocity
             Direction.RIGHT -> x += velocity
         }
-        var direction = when {
+//        var direction = when {
+//            block.y + block.height <= y -> {
+//                null
+//            }
+//            block.y >= y + height -> {
+//                null
+//            }
+//            block.x + block.width <= x -> {
+//                null
+//            }
+//            block.x >= x + width -> {
+//                null
+//            }
+//            else -> {
+//                currentDirection
+//            }
+//        }
+        var collisionFlag = when {
             block.y + block.height <= y -> {
-                null
+                false
             }
             block.y >= y + height -> {
-                null
+                false
             }
             block.x + block.width <= x -> {
-                null
+                false
             }
             block.x >= x + width -> {
-                null
+                false
             }
             else -> {
-                currentDirection
+                true
             }
         }
-        return direction
+        return (if (collisionFlag) currentDirection else null)
     }
 
     override fun notifyCollision(direction: Direction?, block: Blockable?) {

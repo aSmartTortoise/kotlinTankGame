@@ -1,7 +1,4 @@
-import business.AutoMoveable
-import business.Blockable
-import business.Destroyable
-import business.Moveable
+import business.*
 import enums.Direction
 import javafx.beans.binding.When
 import javafx.scene.input.KeyCode
@@ -109,6 +106,19 @@ class GameWindow : Window(
             it as Destroyable
             if (it.canDestroy()) {
                 views.remove(it)
+            }
+        }
+
+        //检测具有攻击和遭受攻击能力的物体
+        views.filter { it is Attackable }.forEach { attack->
+            attack as Attackable
+            views.filter { it is Sufferable }.forEach sufferTag@{ suffer->
+                suffer as Sufferable
+                if (attack.willCollision(suffer)) {
+                    attack.notityAttack(suffer)
+                    suffer.notifySuffer(attack)
+                    return@sufferTag
+                }
             }
         }
     }
