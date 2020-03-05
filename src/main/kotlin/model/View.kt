@@ -8,4 +8,25 @@ interface View {
     val height:Int
 
     fun draw()
+
+    fun checkCollision(x1: Int, y1: Int, w1: Int, h1: Int,
+                       x2: Int, y2: Int, w2: Int, h2: Int): Boolean{
+        return when {
+            y2 + h2 <= y1 -> {
+                false
+            }
+            y2 >= y1 + h1 -> {
+                false
+            }
+            x2 + w2 <= x1 -> {
+                false
+            }
+            x2 >= x1 + w1 -> {
+                false
+            }
+            else -> {
+                true
+            }
+        }
+    }
 }

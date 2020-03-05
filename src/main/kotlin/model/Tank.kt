@@ -67,40 +67,9 @@ class Tank(override var x: Int, override var y: Int) :Moveable {
             Direction.LEFT -> x -= velocity
             Direction.RIGHT -> x += velocity
         }
-//        var direction = when {
-//            block.y + block.height <= y -> {
-//                null
-//            }
-//            block.y >= y + height -> {
-//                null
-//            }
-//            block.x + block.width <= x -> {
-//                null
-//            }
-//            block.x >= x + width -> {
-//                null
-//            }
-//            else -> {
-//                currentDirection
-//            }
-//        }
-        var collisionFlag = when {
-            block.y + block.height <= y -> {
-                false
-            }
-            block.y >= y + height -> {
-                false
-            }
-            block.x + block.width <= x -> {
-                false
-            }
-            block.x >= x + width -> {
-                false
-            }
-            else -> {
-                true
-            }
-        }
+
+        var collisionFlag = checkCollision(x, y, width, height,
+            block.x, block.y, block.width, block.height)
         return (if (collisionFlag) currentDirection else null)
     }
 

@@ -5,8 +5,14 @@ import business.AutoMoveable
 import business.Destroyable
 import business.Sufferable
 import enums.Direction
+import extend.checkCollision
 import org.itheima.kotlin.game.core.Painter
 
+/**
+ * 具备自动移动的能力
+ * 可以被销毁的能力
+ * 攻击的能力
+ */
 class Bullet(override var currentDirection: Direction, creator: (width:Int, height: Int) -> Pair<Int, Int>):
     AutoMoveable, Destroyable, Attackable {
 
@@ -15,6 +21,8 @@ class Bullet(override var currentDirection: Direction, creator: (width:Int, heig
     override val width: Int
     override val height: Int
     override val velocity: Int = 8
+    private var destroyed: Boolean = false
+    override val attackPower: Int = 1
     private var path: String = when (currentDirection) {
         Direction.UP -> "img/bullet_u.gif"
         Direction.DOWN -> "img/bullet_d.gif"
@@ -45,6 +53,7 @@ class Bullet(override var currentDirection: Direction, creator: (width:Int, heig
     }
 
     override fun canDestroy(): Boolean {
+        if (destroyed) return true
         if (x < -width || x > Config.gameWidth) {
             return true
         }
@@ -55,9 +64,11 @@ class Bullet(override var currentDirection: Direction, creator: (width:Int, heig
     }
 
     override fun willCollision(sufferable: Sufferable): Boolean {
-        return false
+        return checkCollision(sufferable)
     }
 
     override fun notityAttack(suffer: Sufferable) {
+        //子弹打击物体，子弹即销毁
+        destroyed = true
     }
 }
