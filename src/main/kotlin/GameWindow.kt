@@ -32,6 +32,7 @@ class GameWindow : Window(
                     '铁' -> views.add(Steel(collumIndex * Config.block, rowIndex * Config.block))
                     '草' -> views.add(Grass(collumIndex * Config.block, rowIndex * Config.block))
                     '水' -> views.add(Water(collumIndex * Config.block, rowIndex * Config.block))
+                    '敌' -> views.add(Enemy(collumIndex * Config.block, rowIndex * Config.block))
 
                 }
                 collumIndex++
@@ -116,7 +117,10 @@ class GameWindow : Window(
                 suffer as Sufferable
                 if (attack.willCollision(suffer)) {
                     attack.notityAttack(suffer)
-                    suffer.notifySuffer(attack)
+                    var sufferEffectViews = suffer.notifySuffer(attack)
+                    sufferEffectViews?.let {
+                        views.addAll(sufferEffectViews)
+                    }
                     return@sufferTag
                 }
             }

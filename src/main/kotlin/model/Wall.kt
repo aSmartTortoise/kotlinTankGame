@@ -4,6 +4,7 @@ import business.Attackable
 import business.Blockable
 import business.Destroyable
 import business.Sufferable
+import org.itheima.kotlin.game.core.Composer
 import org.itheima.kotlin.game.core.Painter
 
 /**
@@ -21,9 +22,12 @@ class Wall(override val x: Int, override val y: Int) :Blockable, Sufferable, Des
 
     override fun canDestroy(): Boolean = blood <= 0
 
-    override fun notifySuffer(attack: Attackable) {
+    override fun notifySuffer(attack: Attackable): Array<View>? {
         //遭受攻击后，掉血
         blood -= attack.attackPower
+        //播放被攻击的yinxiao
+        Composer.play("audio/hit.wav")
+        return arrayOf(Blast(x, y))
     }
 
 }
