@@ -1,5 +1,6 @@
 import business.AutoMoveable
 import business.Blockable
+import business.Destroyable
 import business.Moveable
 import enums.Direction
 import javafx.beans.binding.When
@@ -9,13 +10,16 @@ import model.*
 import org.itheima.kotlin.game.core.Painter
 import org.itheima.kotlin.game.core.Window
 import java.io.File
+import java.util.concurrent.CopyOnWriteArrayList
 
 class GameWindow : Window(
     title = "坦克大战1.0", width = Config.gameWidth,
     height = Config.gameHeight
 ) {
 
-    private val views = arrayListOf<View>()
+//    private val views = arrayListOf<View>()
+    //线程安全的集合
+    private val views = CopyOnWriteArrayList<View>()
     //lateinit 延迟初始化
     private lateinit var tank: Tank
 
@@ -48,6 +52,7 @@ class GameWindow : Window(
         views.forEach {
             it.draw()
         }
+
 
     }
 
@@ -97,6 +102,14 @@ class GameWindow : Window(
         //检测自动移动的物体，并自动移动起来
         views.filter { it is AutoMoveable }.forEach {
             (it as AutoMoveable).autoMove()
+        }
+
+        //检测可销毁的物体是否需要销毁
+        views.filter { it is Destroyable }.forEach {
+            it as Destroyable
+            if (it.canDestroy()) {
+                views.remove(it)
+            }
         }
     }
 }

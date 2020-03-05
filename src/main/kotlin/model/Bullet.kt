@@ -1,10 +1,12 @@
 package model
 
 import business.AutoMoveable
+import business.Destroyable
 import enums.Direction
 import org.itheima.kotlin.game.core.Painter
 
-class Bullet(override var currentDirection: Direction, creator: (width:Int, height: Int) -> Pair<Int, Int>) :AutoMoveable {
+class Bullet(override var currentDirection: Direction, creator: (width:Int, height: Int) -> Pair<Int, Int>):
+    AutoMoveable, Destroyable {
 
     override var x: Int = 0
     override var y: Int = 0
@@ -38,5 +40,15 @@ class Bullet(override var currentDirection: Direction, creator: (width:Int, heig
             Direction.LEFT -> x -= velocity
             Direction.RIGHT -> x += velocity
         }
+    }
+
+    override fun canDestroy(): Boolean {
+        if (x < width || x > Config.gameWidth) {
+            return true
+        }
+        if (y < height || y > Config.gameHeight) {
+            return true
+        }
+        return false
     }
 }
