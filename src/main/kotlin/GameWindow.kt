@@ -19,6 +19,7 @@ class GameWindow : Window(
     private val views = CopyOnWriteArrayList<View>()
     //lateinit 延迟初始化
     private lateinit var tank: Tank
+    private lateinit var camp: Camp
 
     override fun onCreate() {
         var file = File(javaClass.getResource("/map/1.map").path)
@@ -40,8 +41,10 @@ class GameWindow : Window(
             rowIndex++
         }
 
-        tank = Tank(Config.block * 6, Config.block * 11)
+        tank = Tank(Config.block * 7, Config.block * 11)
         views.add(tank)
+        camp = Camp(Config.gameWidth / 2 - Config.block, Config.gameHeight - Config.block - Config.block / 2)
+        views.add(camp)
     }
 
     override fun onDisplay() {
