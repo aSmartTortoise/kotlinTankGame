@@ -125,5 +125,14 @@ class GameWindow : Window(
                 }
             }
         }
+
+        //检测自动射击的物体，并自动射击
+        views.filter { it is AutoShot }.forEach {
+            it as AutoShot
+            var bullet = it.autoShot()
+            bullet?.let {
+                views.add(bullet)
+            }
+        }
     }
 }

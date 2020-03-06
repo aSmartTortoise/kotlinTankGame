@@ -1,6 +1,7 @@
 package model
 
 import business.AutoMoveable
+import business.AutoShot
 import business.Blockable
 import business.Moveable
 import enums.Direction
@@ -14,12 +15,16 @@ import java.util.*
  * 阻挡的能力
  */
 class Enemy(override var x: Int, override var y: Int)
-    : Moveable, AutoMoveable, Blockable {
+    : Moveable, AutoMoveable, Blockable, AutoShot {
     override val width: Int = Config.block
     override val height: Int = Config.block
     override var currentDirection: Direction = Direction.DOWN
     override val velocity: Int = 8
     private var badDirection: Direction? = null
+    private var lastShotTime = 0L
+    private val shotInterval = 1000L
+    private var lastMoveTime = 0L
+    private val moveInterval = 50L
 
     override fun draw() {
         //根据坦克的方向进行绘制
@@ -37,6 +42,10 @@ class Enemy(override var x: Int, override var y: Int)
     }
 
     override fun autoMove() {
+        var currentTimeMillis = System.currentTimeMillis()
+        if (currentTimeMillis - lastMoveTime <= moveInterval) return
+        lastMoveTime = currentTimeMillis
+
         if (currentDirection == badDirection) {
             currentDirection = randomDirection(badDirection)
             return
@@ -74,5 +83,39 @@ class Enemy(override var x: Int, override var y: Int)
             direction = randomDirection(badDirection)
         }
         return direction
+    }
+
+    override fun autoShot(): View? {
+        var currentTimeMillis = System.currentTimeMillis()
+        if (currentTimeMillis - lastShotTime <= shotInterval) return null
+        lastShotTime = currentTimeMillis
+        return Bullet(currentDirection) { bulletWidth, bulletHeight ->
+            /**
+             * 坦克朝上
+             * bulletX = tankX + (tankWidth-bulletWidth)/2
+             * bulletY = tankY - bulletHeight/2
+             */
+            var bulletX: Int = x
+            var bulletY: Int = y
+            when (currentDirection) {
+                Direction.UP -> {
+                    bulletX = x + (width - bulletWidth) / 2
+                    bulletY = y - bulletHeight / 2
+                }
+                Direction.DOWN -> {
+                    bulletX = x + (width - bulletWidth) / 2
+                    bulletY = y + height - bulletHeight / 2
+                }
+                Direction.LEFT -> {
+                    bulletX = x - bulletWidth / 2
+                    bulletY = y + (height - bulletHeight) / 2
+                }
+                Direction.RIGHT -> {
+                    bulletX = x + width - bulletWidth / 2
+                    bulletY = y + (height - bulletHeight) / 2
+                }
+            }
+            Pair(bulletX, bulletY)
+        }
     }
 }
