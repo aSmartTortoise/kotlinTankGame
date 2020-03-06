@@ -23,6 +23,23 @@ interface Moveable : View {
             Direction.RIGHT -> x += velocity
         }
 
+        /**
+         * 移动物体和窗口边界的检测
+         */
+        if (y < 0) {
+            return Direction.UP
+        }else if (y > Config.gameHeight - Config.block) {
+            return Direction.DOWN
+        }
+
+        if (x < 0) {
+           return Direction.LEFT
+        }else if (x > Config.gameWidth - Config.block) {
+            return Direction.RIGHT
+        }
+        /**
+         * 移动物体和阻挡物体的检测
+         */
         var collisionFlag = checkCollision(
             x, y, width, height,
             block.x, block.y, block.width, block.height

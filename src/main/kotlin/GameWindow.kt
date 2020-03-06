@@ -84,7 +84,7 @@ class GameWindow : Window(
             move as Moveable
             var blockView: Blockable? = null
             var badDirection: Direction? = null
-            views.filter { it is Blockable }.forEach blockTag@{ block ->
+            views.filter { (it is Blockable) and (it != move) }.forEach blockTag@{ block ->
                 block as Blockable
                 var direction = move.willCollision(block)
                 direction?.let {
