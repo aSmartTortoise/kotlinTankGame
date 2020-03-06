@@ -89,4 +89,20 @@ class Camp(override var x: Int, override var y: Int) : Blockable, Sufferable, De
 
     override fun canDestroy(): Boolean = blood <= 0
 
+    override fun showDead(): Array<View>? {
+        return arrayOf(
+            Blast(x - 32, y - 32)
+            , Blast(x, y - 32)
+            , Blast(x + 32, y - 32)
+
+            , Blast(x - 32, y)
+            , Blast(x, y)
+            , Blast(x + 32, y)
+
+            , Blast(x - 32, y + 32)
+            , Blast(x, y + 32)
+            , Blast(x + 32, y + 32)
+        )
+    }
+
 }

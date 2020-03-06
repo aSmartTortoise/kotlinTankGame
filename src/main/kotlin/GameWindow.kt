@@ -20,6 +20,11 @@ class GameWindow : Window(
     //lateinit 延迟初始化
     private lateinit var tank: Tank
     private lateinit var camp: Camp
+    private var gameOverFlag: Boolean = false
+    private var enemyTotalCount = 3
+    private var activateEnemyCount = 1
+    private var enemyBornLocations = arrayListOf<Pair<Int, Int>>()
+    private var locationIndex: Int = 0
 
     override fun onCreate() {
         var file = File(javaClass.getResource("/map/1.map").path)
@@ -33,7 +38,7 @@ class GameWindow : Window(
                     '铁' -> views.add(Steel(collumIndex * Config.block, rowIndex * Config.block))
                     '草' -> views.add(Grass(collumIndex * Config.block, rowIndex * Config.block))
                     '水' -> views.add(Water(collumIndex * Config.block, rowIndex * Config.block))
-                    '敌' -> views.add(Enemy(collumIndex * Config.block, rowIndex * Config.block))
+                    '敌' -> enemyBornLocations.add(Pair(collumIndex * Config.block, rowIndex * Config.block))
 
                 }
                 collumIndex++
@@ -59,6 +64,7 @@ class GameWindow : Window(
 
     override fun onKeyPressed(event: KeyEvent) {
         println("onKeyPressed, wyj code:" + event.code)
+        if (gameOverFlag) return
         when (event.code) {
             KeyCode.W -> {
                 tank.move(Direction.UP)
@@ -80,6 +86,22 @@ class GameWindow : Window(
     }
 
     override fun onRefresh() {
+        //检测可销毁的物体是否需要销毁
+        views.filter { it is Destroyable }.forEach {
+            it as Destroyable
+            if (it.canDestroy()) {
+                if (it is Enemy) {
+                    enemyTotalCount --
+                }
+                views.remove(it)
+                var deadViews = it.showDead()
+                deadViews?.let {
+                    views.addAll(deadViews)
+                }
+            }
+        }
+
+        if (gameOverFlag) return
         //界面可见的情况下不停地调用
         //过滤出可运动的元素集合并遍历每个元素
         //进一步遍历阻塞能力的元素集合并遍历每个元素
@@ -105,18 +127,13 @@ class GameWindow : Window(
             (it as AutoMoveable).autoMove()
         }
 
-        //检测可销毁的物体是否需要销毁
-        views.filter { it is Destroyable }.forEach {
-            it as Destroyable
-            if (it.canDestroy()) {
-                views.remove(it)
-            }
-        }
+
 
         //检测具有攻击和遭受攻击能力的物体
         views.filter { it is Attackable }.forEach { attack->
             attack as Attackable
-            views.filter { (it is Sufferable) and (attack.ower != it)}.forEach sufferTag@{ suffer->
+            views.filter { (it is Sufferable) and (attack.ower != it) and (attack != it)}
+                .forEach sufferTag@{ suffer->
                 suffer as Sufferable
                 if (attack.willCollision(suffer)) {
                     attack.notityAttack(suffer)
@@ -136,6 +153,18 @@ class GameWindow : Window(
             bullet?.let {
                 views.add(bullet)
             }
+        }
+
+        //检测是否我方大本营被销毁
+        if (views.filter { it is Camp }.isEmpty() or (enemyTotalCount <= 0)) {
+            gameOverFlag = true
+        }
+
+        if ((enemyTotalCount > 0) and (views.filter { it is Enemy }.size < activateEnemyCount)) {
+            var index = locationIndex % enemyBornLocations.size
+            var pair = enemyBornLocations.get(index)
+            views.add(Enemy(pair.first, pair.second))
+            locationIndex ++
         }
     }
 }

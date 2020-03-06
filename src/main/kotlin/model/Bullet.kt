@@ -12,10 +12,11 @@ import org.itheima.kotlin.game.core.Painter
  * 具备自动移动的能力
  * 可以被销毁的能力
  * 攻击的能力
+ * 遭受打击的能力
  */
 class Bullet(override val ower: View, override var currentDirection: Direction,
              creator: (width:Int, height: Int) -> Pair<Int, Int>):
-    AutoMoveable, Destroyable, Attackable {
+    AutoMoveable, Destroyable, Attackable, Sufferable {
 
     override var x: Int = 0
     override var y: Int = 0
@@ -30,6 +31,8 @@ class Bullet(override val ower: View, override var currentDirection: Direction,
         Direction.LEFT -> "img/bullet_l.gif"
         Direction.RIGHT -> "img/bullet_r.gif"
     }
+
+    override val blood: Int = 1
 
     init {
         var size = Painter.size(path)
@@ -71,5 +74,9 @@ class Bullet(override val ower: View, override var currentDirection: Direction,
     override fun notityAttack(suffer: Sufferable) {
         //子弹打击物体，子弹即销毁
         destroyed = true
+    }
+
+    override fun notifySuffer(attack: Attackable): Array<View>? {
+        return arrayOf(Blast(x, y))
     }
 }
