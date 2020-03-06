@@ -1,10 +1,8 @@
 package model
 
-import business.AutoMoveable
-import business.AutoShot
-import business.Blockable
-import business.Moveable
+import business.*
 import enums.Direction
+import org.itheima.kotlin.game.core.Composer
 import org.itheima.kotlin.game.core.Painter
 import java.util.*
 
@@ -13,9 +11,12 @@ import java.util.*
  * 具有移动的能力
  * 自动移动的能力
  * 阻挡的能力
+ * 自动射击的能力
+ * 遭受攻击的能力
+ * 被销毁的能力
  */
 class Enemy(override var x: Int, override var y: Int)
-    : Moveable, AutoMoveable, Blockable, AutoShot {
+    : Moveable, AutoMoveable, Blockable, AutoShot, Sufferable, Destroyable {
     override val width: Int = Config.block
     override val height: Int = Config.block
     override var currentDirection: Direction = Direction.DOWN
@@ -25,6 +26,7 @@ class Enemy(override var x: Int, override var y: Int)
     private val shotInterval = 1000L
     private var lastMoveTime = 0L
     private val moveInterval = 50L
+    override var blood: Int = 3
 
     override fun draw() {
         //根据坦克的方向进行绘制
@@ -89,7 +91,7 @@ class Enemy(override var x: Int, override var y: Int)
         var currentTimeMillis = System.currentTimeMillis()
         if (currentTimeMillis - lastShotTime <= shotInterval) return null
         lastShotTime = currentTimeMillis
-        return Bullet(currentDirection) { bulletWidth, bulletHeight ->
+        return Bullet(this, currentDirection) { bulletWidth, bulletHeight ->
             /**
              * 坦克朝上
              * bulletX = tankX + (tankWidth-bulletWidth)/2
@@ -118,4 +120,16 @@ class Enemy(override var x: Int, override var y: Int)
             Pair(bulletX, bulletY)
         }
     }
+
+    override fun notifySuffer(attack: Attackable): Array<View>? {
+        if (attack.ower is Enemy) {
+            //如果是队友发出的攻击，则不受损伤
+            return null
+        }
+        blood -= attack.attackPower
+        Composer.play("audio/hit.wav")
+        return arrayOf(Blast(x, y))
+    }
+
+    override fun canDestroy(): Boolean = blood <= 0
 }

@@ -13,7 +13,8 @@ import org.itheima.kotlin.game.core.Painter
  * 可以被销毁的能力
  * 攻击的能力
  */
-class Bullet(override var currentDirection: Direction, creator: (width:Int, height: Int) -> Pair<Int, Int>):
+class Bullet(override val ower: View, override var currentDirection: Direction,
+             creator: (width:Int, height: Int) -> Pair<Int, Int>):
     AutoMoveable, Destroyable, Attackable {
 
     override var x: Int = 0

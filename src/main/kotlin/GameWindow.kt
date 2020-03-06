@@ -113,7 +113,7 @@ class GameWindow : Window(
         //检测具有攻击和遭受攻击能力的物体
         views.filter { it is Attackable }.forEach { attack->
             attack as Attackable
-            views.filter { it is Sufferable }.forEach sufferTag@{ suffer->
+            views.filter { (it is Sufferable) and (attack.ower != it)}.forEach sufferTag@{ suffer->
                 suffer as Sufferable
                 if (attack.willCollision(suffer)) {
                     attack.notityAttack(suffer)

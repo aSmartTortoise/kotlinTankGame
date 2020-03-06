@@ -1,18 +1,26 @@
 package model
 
-import business.Blockable
-import business.Moveable
+import business.*
 import enums.Direction
+import org.itheima.kotlin.game.core.Composer
 import org.itheima.kotlin.game.core.Painter
 
-
-class Tank(override var x: Int, override var y: Int) : Moveable {
+/**
+ * 我方坦克
+ * 具有移动的能力
+ * 阻塞的能力
+ * 遭受攻击的能力
+ * 被销毁的能力
+ */
+class Tank(override var x: Int, override var y: Int)
+    : Moveable, Blockable, Sufferable, Destroyable {
     override val width: Int = Config.block
     override val height: Int = Config.block
 
     override var currentDirection: Direction = Direction.UP
     override val velocity: Int = 8
     private var badDirection: Direction? = null
+    override var blood: Int = 20
 
 
     override fun draw() {
@@ -65,7 +73,7 @@ class Tank(override var x: Int, override var y: Int) : Moveable {
     }
 
     open fun shot(): Bullet {
-        return Bullet(currentDirection) { bulletWidth, bulletHeight ->
+        return Bullet(this, currentDirection) { bulletWidth, bulletHeight ->
             /**
              * 坦克朝上
              * bulletX = tankX + (tankWidth-bulletWidth)/2
@@ -94,4 +102,13 @@ class Tank(override var x: Int, override var y: Int) : Moveable {
             Pair(bulletX, bulletY)
         }
     }
+
+
+    override fun notifySuffer(attack: Attackable): Array<View>? {
+        blood -= attack.attackPower
+        Composer.play("audio/hit.wav")
+        return arrayOf(Blast(x, y))
+    }
+
+    override fun canDestroy(): Boolean = blood <= 0
 }
