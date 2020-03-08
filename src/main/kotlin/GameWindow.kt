@@ -6,7 +6,9 @@ import javafx.scene.input.KeyEvent
 import model.*
 import org.itheima.kotlin.game.core.Painter
 import org.itheima.kotlin.game.core.Window
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStreamReader
 import java.util.concurrent.CopyOnWriteArrayList
 
 class GameWindow : Window(
@@ -21,14 +23,16 @@ class GameWindow : Window(
     private lateinit var tank: Tank
     private lateinit var camp: Camp
     private var gameOverFlag: Boolean = false
-    private var enemyTotalCount = 3
+    private var enemyTotalCount = 6
     private var activateEnemyCount = 1
     private var enemyBornLocations = arrayListOf<Pair<Int, Int>>()
     private var locationIndex: Int = 0
 
     override fun onCreate() {
-        var file = File(javaClass.getResource("/map/1.map").path)
-        var rows = file.readLines()
+//        var file = File(javaClass.getResource("/map/1.map").path)
+        var inputStream = javaClass.getResourceAsStream("/map/1.map")
+        var reader = BufferedReader(InputStreamReader(inputStream, "utf-8"))
+        var rows = reader.readLines()
         var rowIndex = 0
         rows.forEach { row ->
             var collumIndex = 0
